@@ -1,0 +1,111 @@
+-- ============================================================
+-- Weekly Business Review (WBR) — Quality Metrics Report
+-- Accenture | Content Review Operations | EMEA
+--
+-- Purpose: Automates extraction of QA error metrics (False Positives
+--          and False Negatives) for the weekly business review report.
+--          Replaced a manual Google Sheets process, reducing
+--          preparation time by approximately 80%.
+--
+-- Platform: Google PLX SQL Script
+-- Parameters: Replace YYYY-MM-DD placeholders with the reporting
+--             period start and end dates before running.
+-- ============================================================
+
+
+-- -------------------------------------------------------
+-- Query 1: FP and FN counts by Language
+-- -------------------------------------------------------
+WITH
+  Start_Date AS (SELECT DATE 'YYYY-MM-DD' AS start_date),
+  End_Date   AS (SELECT DATE 'YYYY-MM-DD' AS end_date),
+
+  Reviews AS (
+    SELECT
+      language,
+      COUNT(id) AS reviews
+    FROM {TABLE_NAME}
+    WHERE date >= (SELECT start_date FROM Start_Date)
+      AND date <= (SELECT end_date FROM End_Date)
+    GROUP BY language
+  ),
+
+  Errors AS (
+    SELECT
+      language,
+      SUM(post_fp_l0_l1) AS fp,
+      SUM(post_fn_l0_l1) AS fn
+    FROM {TABLE_NAME}
+    WHERE date >= (SELECT start_date FROM Start_Date)
+      AND date <= (SELECT end_date FROM End_Date)
+    GROUP BY language
+  )
+
+SELECT
+  r.language,
+  r.reviews,
+  e.fp,
+  e.fn
+FROM Reviews       r
+JOIN Errors        e ON r.language = e.language
+ORDER BY (e.fp + e.fn) DESC, r.reviews DESC, r.language;
+
+
+-- -------------------------------------------------------
+-- Query 2: FP and FN counts by Site (Krakow, Dublin, Lisbon)
+-- -------------------------------------------------------
+SELECT
+  CONCAT(RIGHT(location_site, 3), ':') AS site,
+  SUM(post_fp_l0_l1)                   AS fp,
+  SUM(post_fn_l0_l1)                   AS fn
+FROM {TABLE_NAME}
+WHERE decision_date >= 'YYYY-MM-DD'
+  AND decision_date <= 'YYYY-MM-DD'
+GROUP BY site
+ORDER BY SUM(post_fp_l0_l1 + post_fn_l0_l1) DESC;
+
+
+-- -------------------------------------------------------
+-- Query 3: FP and FN counts by Language and Violation Topic
+-- -------------------------------------------------------
+SELECT
+  language,
+  topic,
+  SUM(post_fp_l0_l1) AS fp,
+  SUM(post_fn_l0_l1) AS fn
+FROM {TABLE_NAME}
+WHERE decision_date >= 'YYYY-MM-DD'
+  AND decision_date <= 'YYYY-MM-DD'
+GROUP BY language, topic
+HAVING SUM(post_fp_l0_l1 + post_fn_l0_l1) != 0
+ORDER BY SUM(post_fp_l0_l1 + post_fn_l0_l1) DESC;
+
+
+-- -------------------------------------------------------
+-- Query 4: FP and FN counts by Violation Topic
+-- -------------------------------------------------------
+SELECT
+  topic,
+  SUM(post_fp_l0_l1) AS fp,
+  SUM(post_fn_l0_l1) AS fn
+FROM {TABLE_NAME}
+WHERE decision_date >= 'YYYY-MM-DD'
+  AND decision_date <= 'YYYY-MM-DD'
+GROUP BY topic
+HAVING SUM(post_fp_l0_l1 + post_fn_l0_l1) != 0
+ORDER BY SUM(post_fp_l0_l1 + post_fn_l0_l1) DESC;
+
+
+-- -------------------------------------------------------
+-- Query 5: FP and FN counts by Reviewer
+-- -------------------------------------------------------
+SELECT
+  l0_reviewer        AS reviewer,
+  SUM(post_fp_l0_l1) AS fp,
+  SUM(post_fn_l0_l1) AS fn
+FROM {TABLE_NAME}
+WHERE decision_date >= 'YYYY-MM-DD'
+  AND decision_date <= 'YYYY-MM-DD'
+GROUP BY reviewer
+HAVING SUM(post_fp_l0_l1 + post_fn_l0_l1) != 0
+ORDER BY SUM(post_fp_l0_l1 + post_fn_l0_l1) DESC;
