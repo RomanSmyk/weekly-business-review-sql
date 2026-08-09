@@ -3,7 +3,7 @@
 
 ## The Problem
 
-As a Quality Assurance Analyst at Accenture, I was responsible for producing
+As a Quality Assurance Analyst at Accenture for Google, I was responsible for producing
 a Weekly Business Review (WBR) — a recurring report tracking content review
 quality metrics across EMEA markets. The metrics covered:
 
