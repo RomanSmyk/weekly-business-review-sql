@@ -19,7 +19,7 @@ slow, error-prone, and had to be repeated from scratch every reporting cycle.
 
 ## The Solution
 
-I wrote a set of SQL queries in Google BigQuery to automate the entire
+I wrote a set of SQL queries in Google BigQuery / PLX Scripting to automate the entire
 extraction and aggregation process. Each query targets a specific dimension of
 the report and outputs a clean, ready-to-use results table.
 
@@ -41,7 +41,7 @@ against the live data warehouse, with results available in seconds.
 
 ## Technical Notes
 
-- **Platform:** Google BigQuery / PLX Scripting (Standard SQL) (Standard SQL)
+- **Platform:** Google BigQuery / PLX Scripting (Standard SQL)
 - Query 1 uses CTEs to separate the review count and error count logic
   before joining, keeping each step readable and independently testable
 - All queries use parameterised date placeholders (`YYYY-MM-DD`) —
