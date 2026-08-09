@@ -1,6 +1,6 @@
 -- ============================================================
 -- Weekly Business Review (WBR) — Quality Metrics Report
--- Accenture | Content Review Operations | EMEA
+-- Accenture for Google | Content Review Operations | EMEA
 --
 -- Purpose: Automates extraction of QA error metrics (False Positives
 --          and False Negatives) for the weekly business review report.
